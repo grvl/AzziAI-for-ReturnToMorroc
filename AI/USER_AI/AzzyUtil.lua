@@ -1702,43 +1702,12 @@ function GetSAtkSkill(myid)
 	local skill = 0
 	local level = 0
 	if (IsHomun(myid)==1) then
-		htype=GetV(V_HOMUNTYPE,myid)
-		if htype > 47 then -- it's a Homun S
-			if htype==EIRA and UseEiraEraseCutter==1 then
-				skill=MH_ERASER_CUTTER
-				if EiraEraseCutterLevel==nil then
-					level=4
-				else
-					level=EiraEraseCutterLevel
-				end
-			elseif htype==BAYERI and UseBayeriStahlHorn==1 then
-				skill=MH_STAHL_HORN
-				if BayeriStahlHornLevel==nil then
-					level=5
-				else
-					level=BayeriStahlHornLevel
-				end
-			elseif htype==SERA and UseSeraParalyze==1 then
-				skill=MH_NEEDLE_OF_PARALYZE
-				if SeraParalyzeLevel==nil then
-					level=5
-				else
-					level=SeraParalyzeLevel
-				end
-			elseif htype==ELEANOR and UseEleanorSonicClaw==1 and ( EleanorMode==0 or EleanorDoNotSwitchMode==1 ) then
-				skill=MH_SONIC_CRAW
-				if EleanorSonicClawLevel==nil then
-					level=5
-				else
-					level=EleanorSonicClawLevel
-				end
-			elseif htype==ELEANOR and UseEleanorTinderBreaker==1 and EleanorMode==1 then
-				skill=MH_TINDER_BREAKER
-				if EleanorTinderBreakerLevel==nil then
-					level=5
-				else
-					level=EleanorTinderBreakerLevel
-				end
+		if UseEiraEraseCutter==1 then
+			skill=MH_ERASER_CUTTER
+			if EiraEraseCutterLevel==nil then
+				level=4
+			else
+				level=EiraEraseCutterLevel
 			end
 		end
 		if level ~=0 then
@@ -1954,47 +1923,20 @@ function GetMobSkill(myid)
 	local skill = 0
 	local level = 0
 	if (IsHomun(myid)==1) then
-	
-		htype=GetV(V_HOMUNTYPE,MyID)
-		if htype <17 then
-			skill=0
-		else -- it's a homun s
-			if htype==EIRA and UseEiraXenoSlasher==1 then
-				skill=MH_XENO_SLASHER
-				if EiraXenoSlasherLevel==nil then
-					level=4
-				else
-					level=EiraXenoSlasherLevel
-				end
-			elseif htype==BAYERI and UseBayeriHailegeStar==1 then
+			if UseBayeriHailegeStar==1 then
 				skill=MH_HEILIGE_STANGE
 				if BayeriHailegeStarLevel==nil then
 					level=5
 				else
 					level=BayeriHailegeStarLevel
-				end
-			elseif htype==SERA and UseSeraPoisonMist==1 and PoisonMistMode==0 then
-				skill=MH_POISON_MIST
-				if SeraPoisonMistLevel==nil then
-					level=5
-				else
-					level=SeraPoisonMistLevel
-				end
-			elseif htype==DIETER and UseDieterLavaSlide==1 and LavaSlideMode==0 then
-				skill=MH_LAVA_SLIDE
-				if DieterLavaSlideLevel==nil then
-					level=5
-				else
-					level=DieterLavaSlideLevel
-				end
-			end 
+				end 
+			end
 			if AutoSkillCooldown[skill]~=nil then
 				if GetTick() < AutoSkillCooldown[skill] then -- in cooldown
 					level=0
 					skill=0
 				end
 			end
-		end
 		return skill,level
 	else -- SO MUCH EASIER WHEN LEVEL ISN'T SELECTABLE!!!!
 		for i,v in ipairs(MobSkillList) do
@@ -2266,39 +2208,13 @@ function GetHealingSkill(myid)
 	local level = 0
 	local skill = 0
 	if (IsHomun(myid)==1) then
-		htype=GetV(V_HOMUNTYPE,myid)
-		if htype < 17 then --if it's not a homun S just run it through modulo. 
-			homuntype=modulo(GetV(V_HOMUNTYPE,myid),4)
-		else --If it's a homun S, get the OldHomunType
-			if homuntype == EIRA and HealOwnerBreeze == 1 then --Handling for Eira silent breeze
-				skill=MH_SILENT_BREEZE
-				if GetTick() < AutoSkillCooldown[skill] then
-					level=0
-				else
-					level=5
-				end
-				return skill,level
-			end
-			homuntype=modulo(OldHomunType,4)
-		end
-		if (homuntype==1) then -- It's a lif
-			skill=HLIF_HEAL
-			if GetTick() < AutoSkillCooldown[skill] then
-				level=0
-			elseif (LifHealLevel==nil) then
-				level=5
-			else
-				level=LifHealLevel
-			end
-		elseif homuntype==0 then -- It's a vani
-			skill=HVAN_CHAOTIC
-			if GetTick() < AutoSkillCooldown[skill] then
-				level=0
-			elseif (VaniChaoticLevel==nil) then
-				level=3
-			else
-				level=VaniChaoticLevel
-			end
+		skill=HVAN_CHAOTIC
+		if GetTick() < AutoSkillCooldown[skill] then
+			level=0
+		elseif (VaniChaoticLevel==nil) then
+			level=3
+		else
+			level=VaniChaoticLevel
 		end
 	else
 		--currently no merc healing skills
@@ -2311,21 +2227,9 @@ function GetSnipeSkill(myid)
 end
 
 function GetTargetedSkills(myid)
-	s,l=GetAtkSkill(myid)
-	Mainatk={MAIN_ATK,s,l}
 	s,l=GetSAtkSkill(myid)
 	Satk={S_ATK,s,l}
-	s,l=GetComboSkill(myid)
-	ComboAtk={COMBO_ATK,s,l}
-	s,l=GetGrappleSkill(myid)
-	GrappleAtk={GRAPPLE_ATK,s,l}
-	s,l=GetMobSkill(myid)
-	Mobatk={MOB_ATK,s,l}
-	s,l=GetDebuffSkill(myid)
-	Debuffatk={DEBUFF_ATK,s,l}
-	s,l=GetMinionSkill(myid)
-	Minionatk={MINION_ATK,s,l}
-	result={Mainatk,Satk,ComboAtk,GrappleAtk,Mobatk,Debuffatk,Minionatk}
+	result={Satk}
 	return result
 end
 
